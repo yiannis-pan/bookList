@@ -75,12 +75,57 @@ class UI{
 
 }
 
+class Store{
+    static getBooks(){
+        let books;
+
+        if (localStorage.getItem('books') === null){
+            console.log('Another test');
+            books = [];
+        } else {
+            books = JSON.parse(localStorage.getItem('books'));
+        }    
+        return books;
+    };
+
+    static displayBooks(){
+        console.log('test');
+        let books = Store.getBooks();
+        books.forEach(function(book){
+            console.log('test3');
+            UI.addBookToHTML(book);
+        })
+    }
+
+    static addBookToStorage(book){
+        let books = Store.getBooks();
+        books.push(book);
+        console.log(books);
+        localStorage.setItem('books', JSON.stringify(books));
+    };
+
+    static removeBookFromStorage(target, index){
+        let books = Store.getBooks();
+        books.forEach(function(book){
+            if (book.isbn === target.parentElement.previousElementSibling.textContent){ 
+                books.splice(index, 1);
+            }
+        })
+        localStorage.setItem('books', JSON.stringify(books));
+    };
+    
+}
+
+window.addEventListener('DOMContentLoaded', Store.displayBooks);
+
+
 
 document.getElementById('book-form').addEventListener('submit', function(e){
     const input = UI.gatherInput();
     if (UI.validateUserInput(input)){
         const book = new Book(input);
         UI.addBookToHTML(book);
+        Store.addBookToStorage(book);
         UI.showAlert('Book added', 'success');
     } else {
         UI.showAlert('Please enter all fields','error')
@@ -94,5 +139,7 @@ document.getElementById('book-form').addEventListener('submit', function(e){
 
 document.querySelector('#book-list').addEventListener('click', function(e){
     UI.deleteBook(e.target);
+    Store.removeBookFromStorage(e.target)
     UI.showAlert('Book removed', 'success');
 });
+
