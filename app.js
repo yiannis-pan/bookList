@@ -8,7 +8,7 @@ class Book{
 }
 
 class UI{
-    gatherInput(){
+    static gatherInput(){
         const userInput = [];
         userInput[0] = document.getElementById('title').value;
         userInput[1] = document.getElementById('author').value;
@@ -17,7 +17,7 @@ class UI{
         return userInput;
     }
 
-    validateUserInput(userInput){
+    static validateUserInput(userInput){
         let validate = false;
 
         userInput.forEach(e => {
@@ -31,7 +31,7 @@ class UI{
         return validate;
     }
 
-    addBookToHTML(book){
+    static addBookToHTML(book){
         const row = document.createElement('tr');
 
         row.innerHTML = `
@@ -44,7 +44,7 @@ class UI{
         bookList.appendChild(row);
     }
 
-    showAlert(msg, className){
+    static showAlert(msg, className){
         const div = document.createElement('div');
         div.className = `alert ${className}`
         div.appendChild(document.createTextNode(msg));
@@ -60,32 +60,39 @@ class UI{
     }
 
 
-    resetFields(){
+    static resetFields(){
         document.getElementById('title').value = '';
         document.getElementById('author').value = '';
         document.getElementById('isbn').value = '';
     }
 
+    static deleteBook(target){
+        if (target.className === 'delete'){
+            target.parentElement.parentElement.remove();
+        }
 
+    }
 
 }
 
 
 document.getElementById('book-form').addEventListener('submit', function(e){
-    const ui = new UI;
-    const input = ui.gatherInput();
-    if (ui.validateUserInput(input)){
+    const input = UI.gatherInput();
+    if (UI.validateUserInput(input)){
         const book = new Book(input);
-        ui.addBookToHTML(book);
-        ui.showAlert('Book added', 'success');
+        UI.addBookToHTML(book);
+        UI.showAlert('Book added', 'success');
     } else {
-        ui.showAlert('Please enter all fields','error')
+        UI.showAlert('Please enter all fields','error')
     }
 
-    ui.resetFields();
+    UI.resetFields();
 
     e.preventDefault();
 });
 
 
-document.getElementById
+document.querySelector('#book-list').addEventListener('click', function(e){
+    UI.deleteBook(e.target);
+    UI.showAlert('Book removed', 'success');
+});
